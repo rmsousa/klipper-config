@@ -1,1 +1,14 @@
-/etc/systemd/system/smartplug-shutdown.service
+[Unit]
+Description=Unmount webdrives before shutdown
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStop=/bin/sh -c "systemctl list-jobs | grep -q -e \"poweroff.target.*start\""
+ExecStop=/bin/sh -c "/home/pi/tplink-smartplug/tplink_smartplug.py -t 10.0.0.105 -j '{\"count_down\":{\"delete_all_rules\":null}}'"
+ExecStop=/bin/sh -c "/home/pi/tplink-smartplug/tplink_smartplug.py -t 10.0.0.105 -j '{\"count_down\":{\"add_rule\":{\"enable\":1,\"delay\":30,\"act\":0,\"name\":\"RaspberryPiShutdown\"}}}'"
+
+[Install]
+WantedBy=multi-user.target
+
