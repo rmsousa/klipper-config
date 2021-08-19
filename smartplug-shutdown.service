@@ -1,5 +1,5 @@
 [Unit]
-Description=Unmount webdrives before shutdown
+Description=Schedule a smartplug shutdown a few seconds after a system poweroff
 After=network.target
 
 [Service]
