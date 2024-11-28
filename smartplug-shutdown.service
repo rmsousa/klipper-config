@@ -1,1 +1,18 @@
-/etc/systemd/system/smartplug-shutdown.service
+# sudo ln -s smartplug-shutdown.service /etc/systemd/system
+# sudo systemctl enable /etc/systemd/system/smartplug-shutdown.service
+
+[Unit]
+Description=Schedule a smartplug shutdown a few seconds after a system poweroff
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+Environment="PLUG_IP=10.0.0.105"
+ExecStop=/bin/sh -c "systemctl list-jobs | grep -q -e \"poweroff.target.*start\""
+ExecStop=/bin/sh -c "/home/rmsousa/tplink-smartplug/tplink_smartplug.py -t ${PLUG_IP} -j '{\"count_down\":{\"delete_all_rules\":null}}'"
+ExecStop=/bin/sh -c "/home/rmsousa/tplink-smartplug/tplink_smartplug.py -t ${PLUG_IP} -j '{\"count_down\":{\"add_rule\":{\"enable\":1,\"delay\":30,\"act\":0,\"name\":\"RaspberryPiShutdown\"}}}'"
+
+[Install]
+WantedBy=multi-user.target
+
